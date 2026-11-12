@@ -1,0 +1,36 @@
+
+model SensorDevice {
+  id        String   @id @default(cuid())
+  deviceId  String   @unique
+  buildingId String
+  name      String
+  status    String   @default("OFFLINE")
+  lastSeen  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  readings  SensorReading[]
+
+  @@index([buildingId])
+  @@index([status])
+}
+
+model SensorReading {
+  id          String   @id @default(cuid())
+  deviceId    String
+  temperature Float?
+  humidity    Float?
+  co2Ppm      Float?
+  energyKw    Float?
+  occupancy   Int?
+  recordedAt  DateTime @default(now())
+
+  device SensorDevice @relation(
+    fields: [deviceId],
+    references: [deviceId],
+    onDelete: Cascade
+  )
+
+  @@index([deviceId, recordedAt])
+  @@index([recordedAt])
+}
